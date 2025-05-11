@@ -28,6 +28,11 @@ set(CMAKE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include_directories(include/)
 set(sources 
     ${SOURCE_DIR}/main.cpp
+    ${SOURCE_DIR}/Window.cpp
+    ${SOURCE_DIR}/Scene.cpp
+    ${SOURCE_DIR}/Program.cpp
+    ${SOURCE_DIR}/Texture.cpp
+    ${SOURCE_DIR}/Mesh.cpp
 )
 
 add_executable(billboarding ${sources} ${includes})
