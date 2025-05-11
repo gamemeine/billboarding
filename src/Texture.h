@@ -7,6 +7,7 @@ class Texture
 {
 public:
     Texture();
+    ~Texture();
 
     bool Load(
         const std::string& filepath, 

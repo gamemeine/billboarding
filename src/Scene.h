@@ -1,6 +1,7 @@
 #pragma once
 #include "Program.h"
 #include "Mesh.h"
+#include "Model.h"
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -23,6 +24,8 @@ private:
 	Texture boxTexture;
     Mesh box;
     Program shader;
+	Model model;
+	Model chair;
 
 	float fieldOfView;
 	glm::mat4 projectionMatrix;

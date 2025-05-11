@@ -33,6 +33,7 @@ set(sources
     ${SOURCE_DIR}/Program.cpp
     ${SOURCE_DIR}/Texture.cpp
     ${SOURCE_DIR}/Mesh.cpp
+    ${SOURCE_DIR}/Model.cpp
 )
 
 add_executable(billboarding ${sources} ${includes})

@@ -1,10 +1,18 @@
 #include "Texture.h"
 
 #include <iostream>
+#include <filesystem>
+
 #include <stb_image.h>
 
 
 Texture::Texture() : _id(0)
+{
+
+}
+
+
+Texture::~Texture()
 {
     
 }
@@ -40,7 +48,8 @@ bool Texture::Load(const std::string &filepath, GLint paramWrapS, GLint paramWra
 
     stbi_set_flip_vertically_on_load(true);
 
-    unsigned char* image = stbi_load(filepath.c_str(), &imageWidth, &imageHeight, &imageChannels, STBI_rgb);
+    auto path = std::filesystem::path(filepath).string();
+    unsigned char* image = stbi_load(path.c_str(), &imageWidth, &imageHeight, &imageChannels, STBI_rgb);
 
     if (!image)
     {
@@ -70,6 +79,8 @@ bool Texture::Load(const std::string &filepath, GLint paramWrapS, GLint paramWra
     glBindTexture(GL_TEXTURE_2D, 0);
 
     stbi_image_free(image);
+
+    return true;
 }
 
 GLuint Texture::GetID() const

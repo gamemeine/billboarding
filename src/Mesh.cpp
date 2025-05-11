@@ -8,9 +8,6 @@ Mesh::Mesh() : _vao(0), _vbo(0), _ibo(0)
 
 Mesh::~Mesh()
 {
-    glDeleteVertexArrays(1, &_vao);
-    glDeleteBuffers(1, &_vbo);
-    glDeleteBuffers(1, &_ibo);
 }
 
 void Mesh::Init(std::span<Vertex> vertices, std::span<uint32_t> indices)

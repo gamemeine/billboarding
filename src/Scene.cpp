@@ -1,9 +1,5 @@
 #include "Scene.h"
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
@@ -36,6 +32,10 @@ void Scene::Init()
     createBox(box);
     box.SetDiffuseTexture(boxTexture);
 
+    model.Load("../res/models/marble_bust/marble_bust_01_1k.fbx");
+
+    chair.Load("../res/models/Chair.glb", true);
+
     fieldOfView = 45;
     cameraPosition = glm::vec3(0, 0, 20);
     cameraDirection = glm::vec3(0, 0, -1);
@@ -43,7 +43,7 @@ void Scene::Init()
     cameraSpeed = 0.05f;
 
     float aspectRatio = 16.0f / 9.0f;
-    projectionMatrix = glm::perspective(glm::radians(fieldOfView), aspectRatio, 0.1f, 100.0f);    
+    projectionMatrix = glm::perspective(glm::radians(fieldOfView), aspectRatio, 0.1f, 100.0f);
 }
 
 void Scene::Update(GLFWwindow *window)
@@ -104,12 +104,22 @@ void Scene::Render()
     {
         for (int j = -2; j <= 2; j++)
         {
-            modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(i * 3.0f, j * 3.0f, 0.0f));
+            modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(i * 3.0f, j * 3.0f, -8.0f));
             glUniformMatrix4fv(shader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
 
             box.Draw(shader);
         }
     }
+
+    modelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(0.5f));
+    glUniformMatrix4fv(shader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    chair.Draw(shader);
+
+    modelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(5.0f));
+    modelMatrix = glm::rotate(modelMatrix, -glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, -0.5f));
+    glUniformMatrix4fv(shader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    model.Draw(shader);
 }
 
 
