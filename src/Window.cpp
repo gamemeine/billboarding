@@ -11,7 +11,7 @@ static void OnWindowResize(GLFWwindow *window, int width, int height);
 
 Window::Window() : _window(nullptr)
 {
-
+   
 }
 
 
@@ -54,7 +54,11 @@ bool Window::Init(int width, int height, const std::string& title)
     }
 
     glViewport(0, 0, width, height);
+    glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetFramebufferSizeCallback(_window, OnWindowResize);
+    glfwSetCursorPosCallback(_window, Window::UpdateMouse);
+    glfwSetScrollCallback(_window, Window::UpdateScroll);
+    glfwSetWindowUserPointer(_window, this);
 
     return true;
 }
@@ -83,7 +87,45 @@ void Window::RunMainLoop()
     }
 }
 
+void Window::UpdateMouse(GLFWwindow* window, double xpos, double ypos)
+{
+    Window* instance = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    if (instance)
+    {
+        instance->HandleMouse(static_cast<float>(xpos), static_cast<float>(ypos));
+    }
+}
 
+void Window::UpdateScroll(GLFWwindow* window, double xoffset, double yoffset)
+{
+    Window* instance = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    if (instance)
+    {
+        instance->HandleScroll(static_cast<float>(xoffset), static_cast<float>(yoffset));
+    }
+}
+
+void Window::HandleMouse(float xpos, float ypos)
+{
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos;
+    lastX = xpos;
+    lastY = ypos;
+
+    _scene.UpdateCameraDirection(xoffset, yoffset);
+}
+
+void Window::HandleScroll(float xoffset, float yoffset)
+{
+    //std::cerr << "scroll moved \n" << xoffset << " " << yoffset;
+    _scene.UpdateCameraZoom(xoffset, yoffset);
+}
 
 static void OnWindowResize(GLFWwindow *window, int width, int height)
 {

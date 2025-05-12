@@ -12,7 +12,6 @@
 
 static void createBox(Mesh& mesh);
 
-
 Scene::Scene()
 {
 
@@ -25,72 +24,61 @@ Scene::~Scene()
 
 void Scene::Init()
 {
-    shader.Load("shader.vs.glsl", "shader.fs.glsl");
+    shader.Load("shader.vs.glsl", "shader.fs.glsl"); 
 
-    boxTexture.Load("../res/textures/box.png", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    boxTexture.Load("C:/git/opemgl/res/textures/box.png", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 
     createBox(box);
     box.SetDiffuseTexture(boxTexture);
 
-    model.Load("../res/models/marble_bust/marble_bust_01_1k.fbx");
+    model.Load("C:/git/opemgl/res/models/marble_bust/marble_bust_01_1k.fbx");
 
-    chair.Load("../res/models/Chair.glb", true);
+    chair.Load("C:/git/opemgl/res/models/Chair.glb", true);
 
-    fieldOfView = 45;
-    cameraPosition = glm::vec3(0, 0, 20);
-    cameraDirection = glm::vec3(0, 0, -1);
-    cameraUp = glm::vec3(0, 1, 0);
-    cameraSpeed = 0.05f;
-
-    float aspectRatio = 16.0f / 9.0f;
-    projectionMatrix = glm::perspective(glm::radians(fieldOfView), aspectRatio, 0.1f, 100.0f);
+    camera.Init(45, glm::vec3(0, 0, 20), glm::vec3(0, 0, -1), 0.05f);
 }
 
 void Scene::Update(GLFWwindow *window)
 {
-    viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraDirection, cameraUp);
+    // UPDATE CAMERA
+    camera.Update(window);
 
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+    }
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    // INPUT FOR BLOCKING CAMERA MOVEMENT
+    static float lastPress = glfwGetTime();
+    if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS && (glfwGetTime() - lastPress) > 0.5f)
     {
-        cameraPosition.z -= cameraSpeed;
+        switch (glfwGetInputMode(window, GLFW_CURSOR))
+        {
+        case GLFW_CURSOR_DISABLED:
+        {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            camera.Deactivate();
+            break;
+        }
+        default:
+        {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); 
+            camera.Activate();
+            break;
+        }
+        }
+        lastPress = glfwGetTime();
     }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    {
-        cameraPosition.z += cameraSpeed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    {
-        cameraPosition.x -= cameraSpeed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    {
-        cameraPosition.x += cameraSpeed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-    {
-        cameraPosition.y -= cameraSpeed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-    {
-        cameraPosition.y += cameraSpeed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-    {
-        cameraDirection = glm::vec3(0, 0, -1);
-    }
-    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
-    {
-        cameraDirection = glm::vec3(0, 0, 1);
-    }
-    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
-    {
-        cameraDirection = glm::vec3(-1, 0, 0);
-    }
-    if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
-    {
-        cameraDirection = glm::vec3(1, 0, 0);
-    }
+}
+
+void Scene::UpdateCameraDirection(float xoffset, float yoffset)
+{
+    camera.UpdateDirection(xoffset, yoffset);
+}
+
+void Scene::UpdateCameraZoom(float xoffset, float yoffset)
+{
+    camera.UpdateZoom(xoffset, yoffset);
 }
 
 void Scene::Render()
@@ -99,15 +87,15 @@ void Scene::Render()
 
     glm::vec3 lightPos(10.0f, 10.0f, 10.0f);
     glUniform3fv(shader.GetUniformID("uLightPos"), 1, glm::value_ptr(lightPos));
-    glUniform3fv(shader.GetUniformID("uViewPos"), 1, glm::value_ptr(cameraPosition));
     glUniform3fv(shader.GetUniformID("uLightColor"), 1, glm::value_ptr(glm::vec3(1.0f)));
 
     glUniform1f(shader.GetUniformID("uAmbientStrength"), 0.1f);
     glUniform1f(shader.GetUniformID("uSpecularStrength"), 0.5f);
     glUniform1i(shader.GetUniformID("uShininess"), 32);
 
-    glUniformMatrix4fv(shader.GetUniformID("uViewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
-    glUniformMatrix4fv(shader.GetUniformID("uProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+    glUniform3fv(shader.GetUniformID("uViewPos"), 1, glm::value_ptr(camera.GetCameraPos()));
+    glUniformMatrix4fv(shader.GetUniformID("uViewMatrix"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
+    glUniformMatrix4fv(shader.GetUniformID("uProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(camera.GetProjectionMatrix()));
 
     for (int i = -2; i <= 2; i++)
     {

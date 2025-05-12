@@ -3,11 +3,9 @@
 #include "Mesh.h"
 #include "Model.h"
 
+#include "Camera.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-
-
-
 
 struct GLFWwindow;
 
@@ -18,6 +16,8 @@ public:
     ~Scene();
     void Init();
     void Update(GLFWwindow *window);
+	void UpdateCameraDirection(float xoffset, float yoffset);
+	void UpdateCameraZoom(float xoffset, float yoffset);
     void Render();
 
 private:
@@ -26,14 +26,7 @@ private:
     Program shader;
 	Model model;
 	Model chair;
+	Camera camera;
 
-	float fieldOfView;
-	glm::mat4 projectionMatrix;
-	glm::mat4 viewMatrix;
 	glm::mat4 modelMatrix;
-
-	glm::vec3 cameraPosition;
-	glm::vec3 cameraDirection;
-	glm::vec3 cameraUp;
-	float cameraSpeed;
 };
