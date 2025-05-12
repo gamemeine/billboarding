@@ -84,6 +84,8 @@ bool Model::Load(const std::string& filepath, bool flipUVs)
             }
 
             std::string path = std::string(aipath.C_Str());
+            std::replace(path.begin(), path.end(), '\\', '/');  // Convert to POSIX path
+
             auto it = _textures.find(path);
             if (it == _textures.end())
             {

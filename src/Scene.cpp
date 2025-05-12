@@ -32,7 +32,7 @@ void Scene::Init()
     createBox(box);
     box.SetDiffuseTexture(boxTexture);
 
-    model.Load("../res/models/marble_bust/marble_bust_01_1k.fbx");
+    // model.Load("../res/models/marble_bust/marble_bust_01_1k.fbx");
 
     chair.Load("../res/models/Chair.glb", true);
 
@@ -96,6 +96,15 @@ void Scene::Update(GLFWwindow *window)
 void Scene::Render()
 {
     shader.Activate();
+
+    glm::vec3 lightPos(10.0f, 10.0f, 10.0f);
+    glUniform3fv(shader.GetUniformID("uLightPos"), 1, glm::value_ptr(lightPos));
+    glUniform3fv(shader.GetUniformID("uViewPos"), 1, glm::value_ptr(cameraPosition));
+    glUniform3fv(shader.GetUniformID("uLightColor"), 1, glm::value_ptr(glm::vec3(1.0f)));
+
+    glUniform1f(shader.GetUniformID("uAmbientStrength"), 0.1f);
+    glUniform1f(shader.GetUniformID("uSpecularStrength"), 0.5f);
+    glUniform1i(shader.GetUniformID("uShininess"), 32);
 
     glUniformMatrix4fv(shader.GetUniformID("uViewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
     glUniformMatrix4fv(shader.GetUniformID("uProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
