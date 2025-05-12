@@ -32,7 +32,7 @@ void Scene::Init()
     createBox(box);
     box.SetDiffuseTexture(boxTexture);
 
-    // model.Load("../res/models/marble_bust/marble_bust_01_1k.fbx");
+    model.Load("../res/models/marble_bust/marble_bust_01_1k.fbx");
 
     chair.Load("../res/models/Chair.glb", true);
 
