@@ -3,7 +3,7 @@
 
 int main()
 {
-    Program::setProgramsDirectory("C:/git/opemgl/res/shaders");
+    Program::setProgramsDirectory("../res/shaders");
 
     Window window;
     window.Init(1280, 720, "Billboarding");

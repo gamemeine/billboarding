@@ -26,14 +26,14 @@ void Scene::Init()
 {
     shader.Load("shader.vs.glsl", "shader.fs.glsl"); 
 
-    boxTexture.Load("C:/git/opemgl/res/textures/box.png", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    boxTexture.Load("../res/textures/box.png", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 
     createBox(box);
     box.SetDiffuseTexture(boxTexture);
 
-    model.Load("C:/git/opemgl/res/models/marble_bust/marble_bust_01_1k.fbx");
+    model.Load("../res/models/marble_bust/marble_bust_01_1k.fbx");
 
-    chair.Load("C:/git/opemgl/res/models/Chair.glb", true);
+    chair.Load("../res/models/Chair.glb", true);
 
     camera.Init(45, glm::vec3(0, 0, 20), glm::vec3(0, 0, -1), 0.05f);
 }
