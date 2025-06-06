@@ -49,7 +49,7 @@ bool Texture::Load(const std::string &filepath, GLint paramWrapS, GLint paramWra
     stbi_set_flip_vertically_on_load(true);
 
     auto path = std::filesystem::path(filepath).string();
-    unsigned char* image = stbi_load(path.c_str(), &imageWidth, &imageHeight, &imageChannels, STBI_rgb);
+    unsigned char* image = stbi_load(path.c_str(), &imageWidth, &imageHeight, &imageChannels, STBI_rgb_alpha);
 
     if (!image)
     {
@@ -66,7 +66,7 @@ bool Texture::Load(const std::string &filepath, GLint paramWrapS, GLint paramWra
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, paramMinFilter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, paramMagFilter);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth, imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
     if (paramMinFilter == GL_NEAREST_MIPMAP_NEAREST ||
         paramMinFilter == GL_LINEAR_MIPMAP_NEAREST ||

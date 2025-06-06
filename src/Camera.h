@@ -13,15 +13,15 @@ public:
 	//~Camera();
 	void Init(float fov, glm::vec3 pos, glm::vec3 direction, float camSpeed);
 
-	void Update(GLFWwindow* window);
+	void Update(GLFWwindow* window, float dt);
 	void UpdateDirection(float xoffset, float yoffset);
 	void UpdateZoom(float xoffset, float yoffset);
 	void Activate();
 	void Deactivate();
 
-	glm::mat4& GetViewMatrix();
-	glm::mat4& GetProjectionMatrix();
-	glm::vec3& GetCameraPos();
+	const glm::mat4& GetViewMatrix() const;
+	const glm::mat4& GetProjectionMatrix() const;
+	const glm::vec3& GetCameraPos() const;
 
 private:
 	float fieldOfView;

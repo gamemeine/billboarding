@@ -46,6 +46,7 @@ bool Window::Init(int width, int height, const std::string& title)
     }
 
     glfwMakeContextCurrent(_window);
+    glfwSwapInterval(1);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -74,9 +75,15 @@ void Window::RunMainLoop()
 
     _scene.Init();
 
+    double timePrev = glfwGetTime();
+
     while (!glfwWindowShouldClose(_window))
     {
-        _scene.Update(_window);
+        double timeNow = glfwGetTime();
+        double deltaTime = timeNow - timePrev;
+        timePrev = timeNow;
+
+        _scene.Update(_window, float(deltaTime));
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

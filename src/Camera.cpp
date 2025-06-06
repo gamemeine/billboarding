@@ -1,7 +1,7 @@
 #include "Camera.h"
 Camera::Camera() {}
 
-void Camera::Update(GLFWwindow* window)
+void Camera::Update(GLFWwindow* window, float dt)
 {
     if (!movable)
         return;
@@ -10,27 +10,27 @@ void Camera::Update(GLFWwindow* window)
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
-        cameraPosition += cameraDirection * cameraSpeed;
+        cameraPosition += cameraDirection * cameraSpeed * dt;
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
-        cameraPosition -= cameraDirection * cameraSpeed;
+        cameraPosition -= cameraDirection * cameraSpeed * dt;
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
-        cameraPosition -= glm::normalize(glm::cross(cameraDirection, cameraUp)) * cameraSpeed;
+        cameraPosition -= glm::normalize(glm::cross(cameraDirection, cameraUp)) * cameraSpeed * dt;
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
-        cameraPosition += glm::normalize(glm::cross(cameraDirection, cameraUp)) * cameraSpeed;
+        cameraPosition += glm::normalize(glm::cross(cameraDirection, cameraUp)) * cameraSpeed * dt;
     }
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
     {
-        cameraPosition.y -= cameraSpeed;
+        cameraPosition.y -= cameraSpeed * dt;
     }
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
     {
-        cameraPosition.y += cameraSpeed;
+        cameraPosition.y += cameraSpeed * dt;
     }
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS && !lshiftpressed)
     {
@@ -98,7 +98,7 @@ void Camera::Init(float fov, glm::vec3 pos, glm::vec3 direction, float camSpeed)
     movable = true;
     lshiftpressed = false;
 
-    fieldOfView = 20;
+    fieldOfView = fov;
     cameraPosition = pos;
     cameraDirection = direction;
     cameraUp = glm::vec3(0, 1, 0);
@@ -113,17 +113,17 @@ void Camera::Init(float fov, glm::vec3 pos, glm::vec3 direction, float camSpeed)
     sensitivity = 0.2f;
 }
 
-glm::mat4& Camera::GetViewMatrix()
+const glm::mat4& Camera::GetViewMatrix() const
 {
     return viewMatrix;
 }
 
-glm::mat4& Camera::GetProjectionMatrix()
+const glm::mat4& Camera::GetProjectionMatrix() const
 {
     return projectionMatrix;
 }
 
-glm::vec3& Camera::GetCameraPos()
+const glm::vec3& Camera::GetCameraPos() const
 {
     return cameraPosition;
 }

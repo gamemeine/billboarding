@@ -35,6 +35,7 @@ set(sources
     ${SOURCE_DIR}/Mesh.cpp
     ${SOURCE_DIR}/Model.cpp
     ${SOURCE_DIR}/Camera.cpp
+    ${SOURCE_DIR}/WOBillboard.cpp
 )
 
 add_executable(billboarding ${sources} ${includes})

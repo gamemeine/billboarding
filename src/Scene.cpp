@@ -35,13 +35,20 @@ void Scene::Init()
 
     chair.Load("../res/models/Chair.glb", true);
 
-    camera.Init(45, glm::vec3(0, 0, 20), glm::vec3(0, 0, -1), 0.05f);
+    camera.Init(45, glm::vec3(0, 0, 20), glm::vec3(0, 0, -1), 4.0f);
+
+    cloudTexture1.Load("../res/textures/cloud1.png", GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    cloudTexture2.Load("../res/textures/cloud2.png", GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    cloudTexture3.Load("../res/textures/cloud3.png", GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    cloud1.Init(cloudTexture1);
+    cloud2.Init(cloudTexture2);
+    cloud3.Init(cloudTexture3);
 }
 
-void Scene::Update(GLFWwindow *window)
+void Scene::Update(GLFWwindow *window, float dt)
 {
     // UPDATE CAMERA
-    camera.Update(window);
+    camera.Update(window, dt);
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
@@ -117,6 +124,15 @@ void Scene::Render()
     modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, -0.5f));
     glUniformMatrix4fv(shader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
     model.Draw(shader);
+
+
+    cloud1.Draw(camera, glm::vec3(0, 0, 5.0f), glm::vec2(3.0f, 3.0f));
+
+    cloud2.Draw(camera, glm::vec3(10, 10, -10), glm::vec2(5.574f, 4.0f));
+
+    cloud3.Draw(camera, glm::vec3(-15, 20, -30), glm::vec2(10.04f, 4.0f));
+
+    cloud1.Draw(camera, glm::vec3(20, 30, -50), glm::vec2(6.0f));
 }
 
 
