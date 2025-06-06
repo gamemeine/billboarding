@@ -36,6 +36,8 @@ bool Window::Init(int width, int height, const std::string& title)
 #ifdef __APPLE__
     // Enable forward‐compat on macOS
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    // disable high-DPI framebuffer on macOS
+    glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE);
 #endif
 
     _window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
