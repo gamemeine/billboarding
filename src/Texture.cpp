@@ -12,12 +12,6 @@ Texture::Texture() : _id(0)
 }
 
 
-Texture::~Texture()
-{
-    
-}
-
-
 bool Texture::Load(const std::string &filepath, GLint paramWrapS, GLint paramWrapT, GLint paramMinFilter, GLuint paramMagFilter)
 {
 /*

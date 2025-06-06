@@ -1,16 +1,22 @@
 #include "Scene.h"
+#include "Billboard.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 #include <vector>
+#include <chrono>
+#include <iostream>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <GLFW/glfw3.h>
 
+#include <algorithm>
+
 static void createBox(Mesh& mesh);
+static void createQuad(Mesh& mesh);
 
 Scene::Scene()
 {
@@ -31,6 +37,13 @@ void Scene::Init()
     createBox(box);
     box.SetDiffuseTexture(boxTexture);
 
+    // Setup tree billboards
+    treeTexture.Load("../res/textures/tree.png", GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    trees.clear();
+    for (int i = -4; i <= 4; ++i) {
+        trees.emplace_back(&treeTexture, glm::vec3(i * 2.5f, 0.0f, -12.0f), 2.0f, 3.0f);
+    }
+
     model.Load("../res/models/marble_bust/marble_bust_01_1k.fbx");
 
     chair.Load("../res/models/Chair.glb", true);
@@ -40,9 +53,11 @@ void Scene::Init()
     cloudTexture1.Load("../res/textures/cloud1.png", GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     cloudTexture2.Load("../res/textures/cloud2.png", GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     cloudTexture3.Load("../res/textures/cloud3.png", GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-    cloud1.Init(cloudTexture1);
-    cloud2.Init(cloudTexture2);
-    cloud3.Init(cloudTexture3);
+    
+    clouds.emplace_back(cloudTexture1, glm::vec3(0, 0, 5.0f), glm::vec2(3.0f, 3.0f));
+    clouds.emplace_back(cloudTexture2, glm::vec3(10, 10, -10), glm::vec2(5.574f, 4.0f));
+    clouds.emplace_back(cloudTexture3, glm::vec3(-15, 20, -30), glm::vec2(10.04f, 4.0f));
+    clouds.emplace_back(cloudTexture1, glm::vec3(20, 30, -50), glm::vec2(6.0f));
 }
 
 void Scene::Update(GLFWwindow *window, float dt)
@@ -125,14 +140,27 @@ void Scene::Render()
     glUniformMatrix4fv(shader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
     model.Draw(shader);
 
+    // Draw trees as axial billboards
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    for (auto& tree : trees) {
+        tree.Draw(camera.GetCameraPos(), shader);
+    }
+    glDisable(GL_BLEND);
 
-    cloud1.Draw(camera, glm::vec3(0, 0, 5.0f), glm::vec2(3.0f, 3.0f));
 
-    cloud2.Draw(camera, glm::vec3(10, 10, -10), glm::vec2(5.574f, 4.0f));
+    // Draw clouds from back to front:
+    std::sort(clouds.begin(), clouds.end(), [this](WOBillboard& a, WOBillboard& b)
+        {
+            float distanceToA = glm::distance(a.GetPosition(), camera.GetCameraPos());
+            float distanceToB = glm::distance(b.GetPosition(), camera.GetCameraPos());
 
-    cloud3.Draw(camera, glm::vec3(-15, 20, -30), glm::vec2(10.04f, 4.0f));
+            return distanceToA > distanceToB;
+        });
 
-    cloud1.Draw(camera, glm::vec3(20, 30, -50), glm::vec2(6.0f));
+    for (auto& cloud : clouds) {
+        cloud.Draw(camera);
+    }
 }
 
 

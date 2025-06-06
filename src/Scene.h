@@ -3,6 +3,7 @@
 #include "Mesh.h"
 #include "Model.h"
 #include "WOBillboard.h"
+#include "Billboard.h"
 
 #include "Camera.h"
 #include <glad/glad.h>
@@ -22,14 +23,19 @@ public:
     void Render();
 
 private:
-	Texture boxTexture;
+    Texture boxTexture;
+    Texture treeTexture;
     Mesh box;
+    std::vector<Billboard> trees;
     Program shader;
 	Model model;
 	Model chair;
 	WOBillboard cloud1;
-	WOBillboard  cloud2;
-	WOBillboard  cloud3;
+	WOBillboard cloud2;
+	WOBillboard cloud3;
+	
+	std::vector<WOBillboard> clouds;
+
 	Texture cloudTexture1;
 	Texture cloudTexture2;
 	Texture cloudTexture3;
