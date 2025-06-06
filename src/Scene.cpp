@@ -1,9 +1,12 @@
 #include "Scene.h"
+#include "Billboard.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 #include <vector>
+#include <chrono>
+#include <iostream>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -11,6 +14,7 @@
 #include <GLFW/glfw3.h>
 
 static void createBox(Mesh& mesh);
+static void createQuad(Mesh& mesh);
 
 Scene::Scene()
 {
@@ -30,6 +34,13 @@ void Scene::Init()
 
     createBox(box);
     box.SetDiffuseTexture(boxTexture);
+
+    // Setup tree billboards
+    treeTexture.Load("../res/textures/tree.png", GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    trees.clear();
+    for (int i = -4; i <= 4; ++i) {
+        trees.emplace_back(&treeTexture, glm::vec3(i * 2.5f, 0.0f, -12.0f), 2.0f, 3.0f);
+    }
 
     model.Load("../res/models/marble_bust/marble_bust_01_1k.fbx");
 
@@ -117,6 +128,14 @@ void Scene::Render()
     modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, -0.5f));
     glUniformMatrix4fv(shader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
     model.Draw(shader);
+
+    // Draw trees as axial billboards
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    for (auto& tree : trees) {
+        tree.Draw(camera.GetCameraPos(), shader);
+    }
+    glDisable(GL_BLEND);
 }
 
 

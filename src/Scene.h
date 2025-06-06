@@ -2,6 +2,7 @@
 #include "Program.h"
 #include "Mesh.h"
 #include "Model.h"
+#include "Billboard.h"
 
 #include "Camera.h"
 #include <glad/glad.h>
@@ -16,17 +17,18 @@ public:
     ~Scene();
     void Init();
     void Update(GLFWwindow *window);
-	void UpdateCameraDirection(float xoffset, float yoffset);
-	void UpdateCameraZoom(float xoffset, float yoffset);
+    void UpdateCameraDirection(float xoffset, float yoffset);
+    void UpdateCameraZoom(float xoffset, float yoffset);
     void Render();
 
 private:
-	Texture boxTexture;
+    Texture boxTexture;
+    Texture treeTexture;
     Mesh box;
+    std::vector<Billboard> trees;
     Program shader;
-	Model model;
-	Model chair;
-	Camera camera;
-
-	glm::mat4 modelMatrix;
+    Model model;
+    Model chair;
+    Camera camera;
+    glm::mat4 modelMatrix;
 };

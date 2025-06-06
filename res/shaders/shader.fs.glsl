@@ -16,7 +16,10 @@ uniform float uSpecularStrength;
 uniform int uShininess;
 
 void main() {
-  vec3 color = texture(uTexture, TexCoord).rgb;
+  vec4 tex = texture(uTexture, TexCoord);
+  if(tex.a < 0.1) discard;  // Alpha test
+
+  vec3 color = tex.rgb;
   vec3 norm = normalize(Normal);
   vec3 lightDir = normalize(uLightPos - FragPos);
 
@@ -31,5 +34,5 @@ void main() {
   float spec = pow(max(dot(viewDir, reflectDir), 0.0), float(uShininess));
   vec3 specular = uSpecularStrength * spec * uLightColor;
 
-  FragColor = vec4((ambient + diffuse + specular) * color, 1.0);
+  FragColor = vec4((ambient + diffuse + specular) * color, tex.a);
 }
