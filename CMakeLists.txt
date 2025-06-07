@@ -37,6 +37,7 @@ set(sources
     ${SOURCE_DIR}/Camera.cpp
     ${SOURCE_DIR}/WOBillboard.cpp
     ${SOURCE_DIR}/Billboard.cpp
+    ${SOURCE_DIR}/Skybox.cpp
 )
 
 add_executable(billboarding ${sources} ${includes})

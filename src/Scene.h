@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "WOBillboard.h"
 #include "Billboard.h"
+#include "Skybox.h"
 
 #include "Camera.h"
 #include <glad/glad.h>
@@ -35,6 +36,8 @@ private:
 	WOBillboard cloud3;
 	
 	std::vector<WOBillboard> clouds;
+
+	Skybox skybox;
 
 	Texture cloudTexture1;
 	Texture cloudTexture2;

@@ -58,6 +58,8 @@ void Scene::Init()
     clouds.emplace_back(cloudTexture2, glm::vec3(10, 10, -10), glm::vec2(5.574f, 4.0f));
     clouds.emplace_back(cloudTexture3, glm::vec3(-15, 20, -30), glm::vec2(10.04f, 4.0f));
     clouds.emplace_back(cloudTexture1, glm::vec3(20, 30, -50), glm::vec2(6.0f));
+
+    skybox.Init("../res/skyboxtx/", 1);
 }
 
 void Scene::Update(GLFWwindow *window, float dt)
@@ -148,6 +150,8 @@ void Scene::Render()
     }
     glDisable(GL_BLEND);
 
+    // Skybox must be drawn before other billboards/seethrough-objects
+    skybox.Draw(camera);
 
     // Draw clouds from back to front:
     std::sort(clouds.begin(), clouds.end(), [this](WOBillboard& a, WOBillboard& b)
