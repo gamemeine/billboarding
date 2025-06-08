@@ -29,10 +29,11 @@ private:
     Mesh box;
 	Mesh grass;
     std::vector<Billboard> trees;
-    Program basicShader;        // do trawy, billboardów, boxów
-	Program modelShader;        // do modeli z materiałami
+    Program basicShader;
+	Program modelShader;
 	Model model;
 	Model model2;
+	Model model3;
 	Model chair;
 	WOBillboard cloud1;
 	WOBillboard cloud2;
@@ -49,4 +50,10 @@ private:
 	Camera camera;
 
 	glm::mat4 modelMatrix;
+
+	glm::mat4 box1Matrix;
+    glm::mat4 box2Matrix;
+    glm::mat4 box3Matrix;
+    glm::mat4 box4Matrix;
+    glm::mat4 box5Matrix;
 };
