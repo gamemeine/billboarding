@@ -185,6 +185,8 @@ void Program::setupUniforms()
         glGetActiveUniform(_programID, i, maxUniformSize, &uniformNamelength, &uniformSize, &uniformType, name);
 
         _uniformsID[name] = glGetUniformLocation(_programID, name);
+
+        std::cout << "[Uniform] " << name << " -> location: " << _uniformsID[name] << std::endl;
     }
 }
 

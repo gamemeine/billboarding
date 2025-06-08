@@ -46,7 +46,27 @@ void Scene::Init()
 
     model.Load("../res/models/marble_bust/marble_bust_01_1k.fbx");
 
+    model2.Load("../res/models/marble_bust/marble_bust_01_1k.fbx");
+
     chair.Load("../res/models/Chair.glb", true);
+
+    Material bustMat;
+    bustMat.diffuseColor = glm::vec3(0.9f, 0.85f, 0.8f);
+    bustMat.specularColor = glm::vec3(0.5f);
+    bustMat.shininess = 64.0f;
+    model.SetMaterial(bustMat);
+
+    Material shinyMarble;
+    shinyMarble.diffuseColor  = glm::vec3(0.5f, 0.7f, 1.0f);
+    shinyMarble.specularColor = glm::vec3(1.0f);
+    shinyMarble.shininess     = 128.0f;
+    model2.SetMaterial(shinyMarble);
+
+    Material chairMat;
+    chairMat.diffuseColor = glm::vec3(0.6f, 0.3f, 0.1f);
+    chairMat.specularColor = glm::vec3(0.2f);
+    chairMat.shininess = 16.0f;
+    chair.SetMaterial(chairMat);
 
     camera.Init(45, glm::vec3(0, 0, 20), glm::vec3(0, 0, -1), 4.0f);
 
@@ -113,10 +133,6 @@ void Scene::Render()
     glUniform3fv(shader.GetUniformID("uLightPos"), 1, glm::value_ptr(lightPos));
     glUniform3fv(shader.GetUniformID("uLightColor"), 1, glm::value_ptr(glm::vec3(1.0f)));
 
-    glUniform1f(shader.GetUniformID("uAmbientStrength"), 0.1f);
-    glUniform1f(shader.GetUniformID("uSpecularStrength"), 0.5f);
-    glUniform1i(shader.GetUniformID("uShininess"), 32);
-
     glUniform3fv(shader.GetUniformID("uViewPos"), 1, glm::value_ptr(camera.GetCameraPos()));
     glUniformMatrix4fv(shader.GetUniformID("uViewMatrix"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
     glUniformMatrix4fv(shader.GetUniformID("uProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(camera.GetProjectionMatrix()));
@@ -136,11 +152,19 @@ void Scene::Render()
     glUniformMatrix4fv(shader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
     chair.Draw(shader);
 
-    modelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(5.0f));
+    modelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(4.0f, 0.0f, 0.0f));
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(5.0f));
     modelMatrix = glm::rotate(modelMatrix, -glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
     modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, -0.5f));
     glUniformMatrix4fv(shader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
     model.Draw(shader);
+
+    modelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-4.0f, 0.0f, 0.0f));
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(5.0f));
+    modelMatrix = glm::rotate(modelMatrix, -glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, -0.5f));
+    glUniformMatrix4fv(shader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    model2.Draw(shader);
 
     // Draw trees as axial billboards
     glEnable(GL_BLEND);

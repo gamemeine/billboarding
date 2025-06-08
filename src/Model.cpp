@@ -3,6 +3,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <filesystem>
 
@@ -128,10 +129,18 @@ bool Model::Load(const std::string& filepath, bool flipUVs)
     return true;
 }
 
+void Model::SetMaterial(const Material& mat) {
+    _material = mat;
+}
+
 void Model::Draw(Program& program)
 {
     for (Mesh& mesh : _meshes)
     {
+        glUniform3fv(program.GetUniformID("uMaterial.diffuse"), 1, glm::value_ptr(_material.diffuseColor));
+        glUniform3fv(program.GetUniformID("uMaterial.specular"), 1, glm::value_ptr(_material.specularColor));
+        glUniform1f (program.GetUniformID("uMaterial.shininess"), _material.shininess);
+
         mesh.Draw(program);
     }
 }

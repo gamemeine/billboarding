@@ -30,6 +30,7 @@ private:
     std::vector<Billboard> trees;
     Program shader;
 	Model model;
+	Model model2;
 	Model chair;
 	WOBillboard cloud1;
 	WOBillboard cloud2;
