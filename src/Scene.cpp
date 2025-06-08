@@ -47,13 +47,12 @@ void Scene::Init()
     treeTexture.Load("../res/textures/tree.png", GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     trees.clear();
 
-    // Parametry konfiguracji okręgów
-    const int numCircles = 5;
-    const int treesPerCircle = 80;
+    const int numCircles = 3;
+    const int treesPerCircle = 40;
     const float startRadius = 75.0f;
     const float radiusStep = 5.0f;
-    const float treeHeight = -4.0f;
-    const glm::vec2 treeSize = glm::vec2(6.0f, 9.6f);
+    const float treeHeight = -5.0f;
+    const glm::vec2 treeSize = glm::vec2(15.0f, 24.0f);
 
     for (int circle = 0; circle < numCircles; ++circle) {
         float radius = startRadius + circle * radiusStep;
@@ -61,6 +60,19 @@ void Scene::Init()
 
         for (int i = 0; i < treesPerCircle; ++i) {
             float angle = glm::two_pi<float>() * (float(i) / treesPerCircle) + angleOffset;
+            float x = cos(angle) * radius;
+            float z = sin(angle) * radius;
+
+            trees.emplace_back(&treeTexture, glm::vec3(x, treeHeight, z), treeSize.x, treeSize.y);
+        }
+    }
+
+    for (int circle = 1; circle < numCircles + 1; ++circle) {
+        float radius = startRadius - circle * radiusStep * 2;
+        float angleOffset = glm::pi<float>() / (7 - circle) * circle;
+
+        for (int i = 0; i < 7 - circle; ++i) {
+            float angle = glm::two_pi<float>() * (float(i) / (7 - circle)) + angleOffset;
             float x = cos(angle) * radius;
             float z = sin(angle) * radius;
 
@@ -77,20 +89,14 @@ void Scene::Init()
     Material bustMat;
     bustMat.diffuseColor = glm::vec3(0.9f, 0.85f, 0.8f);
     bustMat.specularColor = glm::vec3(0.5f);
-    bustMat.shininess = 64.0f;
+    bustMat.shininess = 20.0f;
     model.SetMaterial(bustMat);
 
     Material shinyMarble;
     shinyMarble.diffuseColor  = glm::vec3(0.5f, 0.7f, 1.0f);
     shinyMarble.specularColor = glm::vec3(1.0f);
-    shinyMarble.shininess     = 128.0f;
+    shinyMarble.shininess     = 180.0f;
     model2.SetMaterial(shinyMarble);
-
-    Material chairMat;
-    chairMat.diffuseColor = glm::vec3(0.9f, 0.8f, 0.8f);
-    chairMat.specularColor = glm::vec3(0.2f);
-    chairMat.shininess = 16.0f;
-    chair.SetMaterial(chairMat);
 
     camera.Init(45, glm::vec3(0, 0, 20), glm::vec3(0, 0, -1), 4.0f);
 
@@ -153,17 +159,13 @@ void Scene::Render()
 {
     modelShader.Activate();
 
-    glm::vec3 lightPos(0.0f, 50.0f, 20.0f);
+    glm::vec3 lightPos(-50.0f, 70.0f, -5.0f);
     glUniform3fv(modelShader.GetUniformID("uLightPos"), 1, glm::value_ptr(lightPos));
     glUniform3fv(modelShader.GetUniformID("uLightColor"), 1, glm::value_ptr(glm::vec3(1.0f)));
 
     glUniform3fv(modelShader.GetUniformID("uViewPos"), 1, glm::value_ptr(camera.GetCameraPos()));
     glUniformMatrix4fv(modelShader.GetUniformID("uViewMatrix"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
     glUniformMatrix4fv(modelShader.GetUniformID("uProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(camera.GetProjectionMatrix()));
-
-    modelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(0.5f));
-    glUniformMatrix4fv(modelShader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-    chair.Draw(modelShader);
 
     modelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(4.0f, 0.0f, 0.0f));
     modelMatrix = glm::scale(modelMatrix, glm::vec3(5.0f));
@@ -208,6 +210,10 @@ void Scene::Render()
     modelMatrix = glm::scale(modelMatrix, glm::vec3(200.0f, 1.0f, 200.0f));
     glUniformMatrix4fv(basicShader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
     grass.Draw(basicShader);
+
+    modelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(0.5f));
+    glUniformMatrix4fv(basicShader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    chair.Draw(basicShader);
 
     // Draw trees as axial billboards
     glEnable(GL_BLEND);
