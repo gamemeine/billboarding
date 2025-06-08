@@ -30,12 +30,18 @@ Scene::~Scene()
 
 void Scene::Init()
 {
-    shader.Load("shader.vs.glsl", "shader.fs.glsl"); 
+    basicShader.Load("shader.vs.glsl", "shader.fs.glsl");
+    modelShader.Load("model_shader.vs.glsl", "model_shader.fs.glsl");
 
     boxTexture.Load("../res/textures/box.png", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 
     createBox(box);
     box.SetDiffuseTexture(boxTexture);
+
+    grassTexture.Load("../res/textures/grass.png", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+
+    createQuad(grass);
+    grass.SetDiffuseTexture(grassTexture);
 
     // Setup tree billboards
     treeTexture.Load("../res/textures/tree.png", GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
@@ -127,50 +133,69 @@ void Scene::UpdateCameraZoom(float xoffset, float yoffset)
 
 void Scene::Render()
 {
-    shader.Activate();
+    modelShader.Activate();
 
-    glm::vec3 lightPos(10.0f, 10.0f, 10.0f);
-    glUniform3fv(shader.GetUniformID("uLightPos"), 1, glm::value_ptr(lightPos));
-    glUniform3fv(shader.GetUniformID("uLightColor"), 1, glm::value_ptr(glm::vec3(1.0f)));
+    glm::vec3 lightPos(0.0f, 50.0f, 20.0f);
+    glUniform3fv(modelShader.GetUniformID("uLightPos"), 1, glm::value_ptr(lightPos));
+    glUniform3fv(modelShader.GetUniformID("uLightColor"), 1, glm::value_ptr(glm::vec3(1.0f)));
 
-    glUniform3fv(shader.GetUniformID("uViewPos"), 1, glm::value_ptr(camera.GetCameraPos()));
-    glUniformMatrix4fv(shader.GetUniformID("uViewMatrix"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
-    glUniformMatrix4fv(shader.GetUniformID("uProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(camera.GetProjectionMatrix()));
-
-    for (int i = -2; i <= 2; i++)
-    {
-        for (int j = -2; j <= 2; j++)
-        {
-            modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(i * 3.0f, j * 3.0f, -8.0f));
-            glUniformMatrix4fv(shader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-
-            box.Draw(shader);
-        }
-    }
+    glUniform3fv(modelShader.GetUniformID("uViewPos"), 1, glm::value_ptr(camera.GetCameraPos()));
+    glUniformMatrix4fv(modelShader.GetUniformID("uViewMatrix"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
+    glUniformMatrix4fv(modelShader.GetUniformID("uProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(camera.GetProjectionMatrix()));
 
     modelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(0.5f));
-    glUniformMatrix4fv(shader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-    chair.Draw(shader);
+    glUniformMatrix4fv(modelShader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    chair.Draw(modelShader);
 
     modelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(4.0f, 0.0f, 0.0f));
     modelMatrix = glm::scale(modelMatrix, glm::vec3(5.0f));
     modelMatrix = glm::rotate(modelMatrix, -glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
     modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, -0.5f));
-    glUniformMatrix4fv(shader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-    model.Draw(shader);
+    glUniformMatrix4fv(modelShader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    model.Draw(modelShader);
 
     modelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-4.0f, 0.0f, 0.0f));
     modelMatrix = glm::scale(modelMatrix, glm::vec3(5.0f));
     modelMatrix = glm::rotate(modelMatrix, -glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
     modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, -0.5f));
-    glUniformMatrix4fv(shader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-    model2.Draw(shader);
+    glUniformMatrix4fv(modelShader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    model2.Draw(modelShader);
+
+    basicShader.Activate();
+
+    glUniform3fv(basicShader.GetUniformID("uLightPos"), 1, glm::value_ptr(lightPos));
+    glUniform3fv(basicShader.GetUniformID("uLightColor"), 1, glm::value_ptr(glm::vec3(1.0f)));
+
+    glUniform1f(basicShader.GetUniformID("uAmbientStrength"), 0.1f);
+    glUniform1f(basicShader.GetUniformID("uSpecularStrength"), 0.5f);
+    glUniform1i(basicShader.GetUniformID("uShininess"), 32);
+
+    glUniform3fv(basicShader.GetUniformID("uViewPos"), 1, glm::value_ptr(camera.GetCameraPos()));
+    glUniformMatrix4fv(basicShader.GetUniformID("uViewMatrix"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
+    glUniformMatrix4fv(basicShader.GetUniformID("uProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(camera.GetProjectionMatrix()));
+    
+    for (int i = -2; i <= 2; i++)
+    {
+        for (int j = -2; j <= 2; j++)
+        {
+            modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(i * 3.0f, j * 3.0f, -8.0f));
+            glUniformMatrix4fv(basicShader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+
+            box.Draw(basicShader);
+        }
+    }
+
+    modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, -10.0f, 0.0f));
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(200.0f, 1.0f, 200.0f));
+    glUniformMatrix4fv(basicShader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    grass.Draw(basicShader);
 
     // Draw trees as axial billboards
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     for (auto& tree : trees) {
-        tree.Draw(camera.GetCameraPos(), shader);
+        tree.Draw(camera.GetCameraPos(), basicShader);
     }
     glDisable(GL_BLEND);
 
@@ -190,7 +215,6 @@ void Scene::Render()
         cloud.Draw(camera);
     }
 }
-
 
 
 void createBox(Mesh& mesh)
@@ -337,5 +361,20 @@ void createBox(Mesh& mesh)
         indices.push_back(i);
     }
 
+    mesh.Init(vertices, indices);
+}
+
+void createQuad(Mesh& mesh)
+{
+    std::vector<Vertex> vertices = {
+        {{-0.5f, 0.0f, -0.5f}, {0, 1, 0}, {0.0f, 0.0f}},
+        {{ 0.5f, 0.0f, -0.5f}, {0, 1, 0}, {200.0f, 0.0f}},
+        {{ 0.5f, 0.0f,  0.5f}, {0, 1, 0}, {200.0f, 200.0f}},
+        {{-0.5f, 0.0f,  0.5f}, {0, 1, 0}, {0.0f, 200.0f}},
+    };
+    std::vector<uint32_t> indices = {
+        0, 2, 1,
+        0, 3, 2
+    };
     mesh.Init(vertices, indices);
 }

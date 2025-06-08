@@ -27,8 +27,10 @@ private:
     Texture boxTexture;
     Texture treeTexture;
     Mesh box;
+	Mesh grass;
     std::vector<Billboard> trees;
-    Program shader;
+    Program basicShader;        // do trawy, billboardów, boxów
+	Program modelShader;        // do modeli z materiałami
 	Model model;
 	Model model2;
 	Model chair;
@@ -43,6 +45,7 @@ private:
 	Texture cloudTexture1;
 	Texture cloudTexture2;
 	Texture cloudTexture3;
+	Texture grassTexture;
 	Camera camera;
 
 	glm::mat4 modelMatrix;
