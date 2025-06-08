@@ -46,8 +46,26 @@ void Scene::Init()
     // Setup tree billboards
     treeTexture.Load("../res/textures/tree.png", GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     trees.clear();
-    for (int i = -4; i <= 4; ++i) {
-        trees.emplace_back(&treeTexture, glm::vec3(i * 2.5f, 0.0f, -12.0f), 2.0f, 3.0f);
+
+    // Parametry konfiguracji okręgów
+    const int numCircles = 5;
+    const int treesPerCircle = 80;
+    const float startRadius = 75.0f;
+    const float radiusStep = 5.0f;
+    const float treeHeight = -4.0f;
+    const glm::vec2 treeSize = glm::vec2(6.0f, 9.6f);
+
+    for (int circle = 0; circle < numCircles; ++circle) {
+        float radius = startRadius + circle * radiusStep;
+        float angleOffset = glm::pi<float>() / treesPerCircle * circle;
+
+        for (int i = 0; i < treesPerCircle; ++i) {
+            float angle = glm::two_pi<float>() * (float(i) / treesPerCircle) + angleOffset;
+            float x = cos(angle) * radius;
+            float z = sin(angle) * radius;
+
+            trees.emplace_back(&treeTexture, glm::vec3(x, treeHeight, z), treeSize.x, treeSize.y);
+        }
     }
 
     model.Load("../res/models/marble_bust/marble_bust_01_1k.fbx");
@@ -69,7 +87,7 @@ void Scene::Init()
     model2.SetMaterial(shinyMarble);
 
     Material chairMat;
-    chairMat.diffuseColor = glm::vec3(0.6f, 0.3f, 0.1f);
+    chairMat.diffuseColor = glm::vec3(0.9f, 0.8f, 0.8f);
     chairMat.specularColor = glm::vec3(0.2f);
     chairMat.shininess = 16.0f;
     chair.SetMaterial(chairMat);
@@ -85,7 +103,7 @@ void Scene::Init()
     clouds.emplace_back(cloudTexture3, glm::vec3(-15, 20, -30), glm::vec2(10.04f, 4.0f));
     clouds.emplace_back(cloudTexture1, glm::vec3(20, 30, -50), glm::vec2(6.0f));
 
-    skybox.Init("../res/skyboxtx/", 1);
+    skybox.Init("../res/skyboxtx/", 4);
 }
 
 void Scene::Update(GLFWwindow *window, float dt)
@@ -166,7 +184,7 @@ void Scene::Render()
     glUniform3fv(basicShader.GetUniformID("uLightPos"), 1, glm::value_ptr(lightPos));
     glUniform3fv(basicShader.GetUniformID("uLightColor"), 1, glm::value_ptr(glm::vec3(1.0f)));
 
-    glUniform1f(basicShader.GetUniformID("uAmbientStrength"), 0.1f);
+    glUniform1f(basicShader.GetUniformID("uAmbientStrength"), 0.8f);
     glUniform1f(basicShader.GetUniformID("uSpecularStrength"), 0.5f);
     glUniform1i(basicShader.GetUniformID("uShininess"), 32);
 
@@ -186,7 +204,7 @@ void Scene::Render()
     }
 
     modelMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, -10.0f, 0.0f));
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, -3.5f, 0.0f));
     modelMatrix = glm::scale(modelMatrix, glm::vec3(200.0f, 1.0f, 200.0f));
     glUniformMatrix4fv(basicShader.GetUniformID("uModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
     grass.Draw(basicShader);
@@ -368,9 +386,9 @@ void createQuad(Mesh& mesh)
 {
     std::vector<Vertex> vertices = {
         {{-0.5f, 0.0f, -0.5f}, {0, 1, 0}, {0.0f, 0.0f}},
-        {{ 0.5f, 0.0f, -0.5f}, {0, 1, 0}, {200.0f, 0.0f}},
-        {{ 0.5f, 0.0f,  0.5f}, {0, 1, 0}, {200.0f, 200.0f}},
-        {{-0.5f, 0.0f,  0.5f}, {0, 1, 0}, {0.0f, 200.0f}},
+        {{ 0.5f, 0.0f, -0.5f}, {0, 1, 0}, {50.0f, 0.0f}},
+        {{ 0.5f, 0.0f,  0.5f}, {0, 1, 0}, {50.0f, 50.0f}},
+        {{-0.5f, 0.0f,  0.5f}, {0, 1, 0}, {0.0f, 50.0f}},
     };
     std::vector<uint32_t> indices = {
         0, 2, 1,
