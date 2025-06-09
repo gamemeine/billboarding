@@ -35,13 +35,13 @@ void Camera::Update(GLFWwindow* window, float dt)
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS && !lshiftpressed)
     {
         lshiftpressed = true;
-        cameraSpeed *= 2;
+        cameraSpeed *= 4;
     }
 
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE && lshiftpressed)
     {
         lshiftpressed = false;
-        cameraSpeed *= 0.5;
+        cameraSpeed *= 0.25;
     }
 }
 
@@ -80,7 +80,7 @@ void Camera::UpdateZoom(float xoffset, float yoffset)
         fieldOfView = 45.0f;
 
     //std::cerr << "FOV: " << fieldOfView << std::endl;
-    projectionMatrix = glm::perspective(glm::radians(fieldOfView), aspectRatio, 0.1f, 100.0f);
+    projectionMatrix = glm::perspective(glm::radians(fieldOfView), aspectRatio, 0.1f, 1000.0f);
 }
 
 void Camera::Activate()
@@ -105,7 +105,7 @@ void Camera::Init(float fov, glm::vec3 pos, glm::vec3 direction, float camSpeed)
     cameraSpeed = camSpeed;
     aspectRatio = 16.0f / 9.0f;
 
-    projectionMatrix = glm::perspective(glm::radians(fieldOfView), aspectRatio, 0.1f, 100.0f);
+    projectionMatrix = glm::perspective(glm::radians(fieldOfView), aspectRatio, 0.1f, 1000.0f);
     viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraDirection, cameraUp);
 
     yaw = -90.0f;

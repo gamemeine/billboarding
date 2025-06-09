@@ -187,6 +187,8 @@ void Scene::UpdateCameraZoom(float xoffset, float yoffset)
 
 void Scene::Render()
 {
+    skybox.Draw(camera);
+
     modelShader.Activate();
 
     glm::vec3 lightPos(-50.0f, 70.0f, -5.0f);
@@ -262,9 +264,6 @@ void Scene::Render()
         tree.Draw(camera.GetCameraPos(), basicShader);
     }
     glDisable(GL_BLEND);
-
-    // Skybox must be drawn before other billboards/seethrough-objects
-    skybox.Draw(camera);
 
     // Draw clouds from back to front:
     std::sort(clouds.begin(), clouds.end(), [this](WOBillboard& a, WOBillboard& b)
