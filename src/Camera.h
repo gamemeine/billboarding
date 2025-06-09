@@ -22,6 +22,7 @@ public:
 	const glm::mat4& GetViewMatrix() const;
 	const glm::mat4& GetProjectionMatrix() const;
 	const glm::vec3& GetCameraPos() const;
+	const glm::vec3& GetDirection() const;
 
 private:
 	float fieldOfView;

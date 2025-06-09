@@ -268,10 +268,10 @@ void Scene::Render()
     // Draw clouds from back to front:
     std::sort(clouds.begin(), clouds.end(), [this](WOBillboard& a, WOBillboard& b)
         {
-            float distanceToA = glm::distance(a.GetPosition(), camera.GetCameraPos());
-            float distanceToB = glm::distance(b.GetPosition(), camera.GetCameraPos());
+            float depthA = glm::dot(a.GetPosition() - camera.GetCameraPos(), camera.GetDirection());
+            float depthB = glm::dot(b.GetPosition() - camera.GetCameraPos(), camera.GetDirection());
 
-            return distanceToA > distanceToB;
+            return depthA > depthB;
         });
 
     for (auto& cloud : clouds) {

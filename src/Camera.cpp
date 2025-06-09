@@ -127,3 +127,8 @@ const glm::vec3& Camera::GetCameraPos() const
 {
     return cameraPosition;
 }
+
+const glm::vec3& Camera::GetDirection() const
+{
+    return cameraDirection;
+}
